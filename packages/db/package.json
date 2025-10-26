@@ -1,18 +1,20 @@
 {
-  "name": "api",
+  "name": "db",
   "module": "index.ts",
   "type": "module",
   "private": true,
   "devDependencies": {
     "@types/bun": "latest"
   },
+  "exports": {
+    "./client": "./index.ts"
+  },
   "peerDependencies": {
-    "typescript": "^5",
-    "db": "*"
+    "typescript": "^5"
   },
   "dependencies": {
-    "@types/express": "^5.0.4",
+    "@prisma/client": "^6.18.0",
     "dotenv": "^17.2.3",
-    "express": "^5.1.0"
+    "prisma": "^6.18.0"
   }
 }
