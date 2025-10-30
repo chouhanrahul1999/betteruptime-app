@@ -1,5 +1,5 @@
 {
-  "name": "db",
+  "name": "store",
   "module": "index.ts",
   "type": "module",
   "private": true,

@@ -1,9 +1,10 @@
 import { Router } from "express";
-import { prismaClient } from "db/client";
+import { prismaClient } from "store/client";
+import { authMiddleware } from "../../middleware";
 
 const router = Router();
 
-router.post("/", async (req, res) => {
+router.post("/", authMiddleware, async (req, res) => {
   if (!req.body.url) {
     res.status(400).json({
       error: "Missing url",
@@ -13,7 +14,8 @@ router.post("/", async (req, res) => {
   const website = await prismaClient.website.create({
     data: {
       url: req.body.url,
-      timeAdded: new Date(),
+      time_added: new Date(),
+      user_id: req.userId!,
     },
   });
   res.json({
@@ -21,6 +23,33 @@ router.post("/", async (req, res) => {
   });
 });
 
-router.get("/status/:websiteId", (req, res) => {});
+router.get("/status/:websiteId", authMiddleware, async (req, res) => {
+  const website = await prismaClient.website.findFirst({
+    where: {
+      id: req.params.websiteId,
+      user_id: req.userId!,
+    },
+    include: {
+      ticks: {
+        orderBy: [
+          {
+            created_at: "desc",
+          },
+        ],
+        take: 1,
+      },
+    },
+  });
+  if (!website) {
+    return res.status(409).json({
+      message: "Not found",
+    });
+  }
+  res.json({
+    url: website.url,
+    id: website.id,
+    user_id: website.user_id
+  });
+});
 
 export default router;
