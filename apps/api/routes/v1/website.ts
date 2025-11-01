@@ -36,7 +36,7 @@ router.get("/status/:websiteId", authMiddleware, async (req, res) => {
             created_at: "desc",
           },
         ],
-        take: 1,
+        take: 10,
       },
     },
   });

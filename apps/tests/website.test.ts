@@ -32,7 +32,7 @@ describe("Website gets created", () => {
     const response = await axios.post(
       `${BASE_URL}/api/v1/website`,
       {
-        url: "https://google.com",
+        url: "https://dkfejfehfejifjj.com",
       },
       {
         headers: {
@@ -46,7 +46,7 @@ describe("Website gets created", () => {
   it("Website is not created if header is not present", async () => {
     try {
       const response = await axios.post(`${BASE_URL}/api/v1/website`, {
-        url: "https://google.com",
+        url: "https://dkfejfehfejifjj.com",
       });
       expect(false, "website should not created if header is not present").toBe(
         true
