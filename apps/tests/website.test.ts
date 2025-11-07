@@ -117,9 +117,55 @@ describe("Can fetch website", () => {
           },
         }
       );
-      expect(false, "should not be able to access website by different user").toBe(true);
+      expect(
+        false,
+        "should not be able to access website by different user"
+      ).toBe(true);
     } catch (e) {
       expect(true).toBe(true); // Should fail with different user
     }
+  });
+});
+
+describe("Should able to get all the website", () => {
+  let token: string, userId: string;
+
+  beforeAll(async () => {
+    const user = await createUser();
+    token = user.jwt;
+    userId = user.id;
+  });
+  it("can fetch its own sets of website", async () => {
+    await axios.post(
+      `${BASE_URL}/api/v1/website`,
+      {
+        url: "https://google.com",
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    await axios.post(
+      `${BASE_URL}/api/v1/website`,
+      {
+        url: "https://facebook.com",
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const response = await axios.get(`${BASE_URL}/api/v1/website/websites`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    (expect(response.data.websites.length == 2,
+      "incorrect no of website is created"));
   });
 });

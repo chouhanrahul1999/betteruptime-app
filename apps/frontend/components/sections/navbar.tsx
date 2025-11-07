@@ -2,13 +2,13 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Calendar,
-  CircleCheckIcon,
-  CircleHelpIcon,
-  CircleIcon,
   FileQuestionMark,
   FileSearch,
+  LogOut,
+  User,
 } from "lucide-react";
 
 import {
@@ -21,11 +21,30 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { Button } from "../ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export function Navigation() {
+  const router = useRouter();
+  const [isSignedIn, setIsSignedIn] = React.useState(false);
+  const [showMenu, setShowMenu] = React.useState(false);
+
+  React.useEffect(() => {
+    const checkAuth = () => setIsSignedIn(!!localStorage.getItem("token"));
+    checkAuth();
+    window.addEventListener("auth-change", checkAuth);
+    return () => window.removeEventListener("auth-change", checkAuth);
+  }, []);
+
+  const handleSignOut = () => {
+    localStorage.removeItem("token");
+    setIsSignedIn(false);
+    window.dispatchEvent(new Event("auth-change"));
+    router.push("/");
+  };
+
   return (
-    <div className="sticky top-0 z-50 dark text-white text-sm bg-slate-950">
-      <div className="mx-24 px-0 p-3 flex justify-between border-b border-zinc-800/50">
+    <div className="sticky top-0 z-50 dark text-white text-sm bg-slate-950 border-b border-zinc-800/50">
+      <div className="mx-24 px-0 p-3 flex justify-between">
         <Link href={"/dashboard"}>
           <div className="flex justify-center items-center gap-2">
             <img
@@ -33,8 +52,7 @@ export function Navigation() {
               src="https://cdn.prod.website-files.com/5e9dc792e1210c5325f7ebbc/64354680f3f50b5758e2cb0d_1642608434799.webp"
               alt=""
             />
-            <link rel="stylesheet" href="" />
-            <span className=" font-medium     text-base">BetterUpTime</span>
+            <span className="font-medium text-base">BetterUpTime</span>
           </div>
         </Link>
         <div>
@@ -161,20 +179,57 @@ export function Navigation() {
           </NavigationMenu>
         </div>
 
-        <div className="flex gap-2">
-          <Link href={"/signin"}>
-            <Button variant={"ghost"} size={"sm"} className="text-xs">
-              Sign in
-            </Button>
-          </Link>
-          <Link href={"signup"}>
-            <Button
-              size={"sm"}
-              className="text-white hover:opacity-90 text-xs "
-            >
-              Sign up
-            </Button>
-          </Link>
+        <div className="flex gap-2 items-center">
+          {isSignedIn ? (
+            <div className="relative">
+              <button
+                onClick={() => setShowMenu(!showMenu)}
+                className="focus:outline-none"
+              >
+                <Avatar>
+                  <AvatarImage src="" />
+                  <AvatarFallback className="bg-indigo-600 text-white">
+                    <User className="h-4 w-4" />
+                  </AvatarFallback>
+                </Avatar>
+              </button>
+              {showMenu && (
+                <div className="absolute right-0 mt-2 w-48 bg-slate-900 border border-zinc-800 rounded-md shadow-lg py-1">
+                  <Link
+                    href="/dashboard"
+                    className="block px-4 py-2 text-sm hover:bg-slate-800 transition-colors"
+                    onClick={() => setShowMenu(false)}
+                  >
+                    <User className="inline h-4 w-4 mr-2" />
+                    Dashboard
+                  </Link>
+                  <button
+                    onClick={handleSignOut}
+                    className="w-full text-left px-4 py-2 text-sm hover:bg-slate-800 transition-colors"
+                  >
+                    <LogOut className="inline h-4 w-4 mr-2" />
+                    Sign out
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
+              <Link href={"/signin"}>
+                <Button variant={"ghost"} size={"sm"} className="text-xs">
+                  Sign in
+                </Button>
+              </Link>
+              <Link href={"signup"}>
+                <Button
+                  size={"sm"}
+                  className="text-white hover:opacity-90 text-xs"
+                >
+                  Sign up
+                </Button>
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </div>

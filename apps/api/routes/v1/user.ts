@@ -27,10 +27,15 @@ router.post("/signup", async (req, res) => {
     return res.status(200).json({
       id: user.id,
     });
-  } catch (e) {
+  } catch (e: any) {
     console.log(e);
+    if (e.code === "P2002") {
+      return res.status(400).json({
+        message: "Username already exists",
+      });
+    }
     return res.status(500).json({
-      message: "Error creating user",
+      message: "Error creating user. Please try again.",
     });
   }
 });

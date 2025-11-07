@@ -48,7 +48,20 @@ router.get("/status/:websiteId", authMiddleware, async (req, res) => {
   res.json({
     url: website.url,
     id: website.id,
-    user_id: website.user_id
+    user_id: website.user_id,
+  });
+});
+
+router.get("/websites", authMiddleware, async (req, res) => {
+  
+  const websites = prismaClient.website.findMany({
+    where: {
+      user_id: req.userId,
+    },
+  });
+
+  res.status(200).json({
+    websites,
   });
 });
 

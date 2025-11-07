@@ -4,7 +4,7 @@ import { FaInstagram, FaTiktok, FaLinkedin, FaTwitter, FaGithub, FaYoutube } fro
 
 export function Footer() {
   return (
-    <footer className="bg-slate-950 text-white py-16 px-24">
+    <footer className="bg-slate-950 text-white py-16 px-24 border-t border-zinc-800/50">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-start mb-16">
           <div className="max-w-lg">
@@ -53,7 +53,9 @@ export function Footer() {
           </div>
         </div>
         
-        <div className="flex justify-between items-center pt-6 border-t border-zinc-800/50">
+      </div>
+      <div className="border-t border-zinc-800/50">
+        <div className="max-w-7xl mx-auto flex justify-between items-center pt-6">
           <div className="flex items-center gap-8 text-sm">
             <a href="#" className="text-gray-500 hover:text-gray-300 transition-colors">Terms of Use</a>
             <a href="#" className="text-gray-500 hover:text-gray-300 transition-colors">Privacy Policy</a>

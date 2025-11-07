@@ -4,8 +4,9 @@ import { Input } from "../ui/input";
 
 export function Hero() {
   return (
-    <section className="relative min-h-[calc(100vh-64px)] flex items-center justify-center bg-cover bg-center bg-[url('https://betterstack.com/assets/v2/homepage-v3/hero-bg-86dc9b29.jpg')]">
-      <div className="container mx-auto px-4 text-center">
+    <section className="relative min-h-[calc(100vh-64px)] flex items-center justify-center bg-slate-950">
+      <div className="absolute inset-0 bg-[url('https://betterstack.com/assets/v2/homepage-v3/hero-bg-86dc9b29.jpg')] bg-cover bg-center opacity-30" />
+      <div className="container mx-auto px-4 text-center relative z-10">
         <div className="mb-6 flex justify-center items-center gap-2">
           <img
             src="https://cdn.prod.website-files.com/5e9dc792e1210c5325f7ebbc/64354680f3f50b5758e2cb0d_1642608434799.webp"
@@ -31,7 +32,7 @@ export function Hero() {
           <Input
             type="email"
             placeholder="Your work e-mail"
-            className="bg-slate-900/50 border-slate-700 text-white placeholder:text-gray-500 h-13 w-80 text-base"
+            className="h-13 w-80 text-base"
           />
           <Link href={"/signup"}>
             <Button
