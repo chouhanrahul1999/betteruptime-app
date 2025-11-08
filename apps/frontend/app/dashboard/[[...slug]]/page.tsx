@@ -27,16 +27,20 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (isMonitorView && monitorId) {
-      const fetchDetails = () => {
-        monitorApi.getById(monitorId).then(setMonitorDetails);
+      const fetchDetails = async () => {
+        setDetailsLoading(true);
+        try {
+          const data = await monitorApi.getById(monitorId);
+          setMonitorDetails(data);
+        } catch (err) {
+          console.error('Failed to fetch monitor details:', err);
+        } finally {
+          setDetailsLoading(false);
+        }
       };
 
-      setDetailsLoading(true);
       fetchDetails();
-      setDetailsLoading(false);
-
-      const interval = setInterval(fetchDetails, 180000); // 3 minutes
-
+      const interval = setInterval(fetchDetails, 180000);
       return () => clearInterval(interval);
     }
   }, [isMonitorView, monitorId]);
@@ -71,8 +75,8 @@ export default function Dashboard() {
             onBack={() => router.push("/dashboard")}
           />
           <MonitorStats data={monitorDetails} timeAdded={currentMonitor.time_added} />
-          <ResponseTimesChart data={monitorDetails?.responseTimes} />
-          <UptimeTable data={monitorDetails?.uptimeStats} />
+          <ResponseTimesChart data={monitorDetails} />
+          <UptimeTable data={monitorDetails} />
         </div>
       </div>
     );
