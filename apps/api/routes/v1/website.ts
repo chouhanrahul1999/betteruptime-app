@@ -11,6 +11,15 @@ router.post("/", authMiddleware, async (req, res) => {
     });
     return;
   }
+
+  await prismaClient.region.createMany({
+    data: [
+      { id: "india", name: "India" },
+      { id: "usa", name: "USA" },
+    ],
+    skipDuplicates: true,
+  });
+  
   const website = await prismaClient.website.create({
     data: {
       url: req.body.url,

@@ -59,3 +59,20 @@ export function calculateUptime(ticks: any[]): string {
   return `${minutes} minute${minutes !== 1 ? 's' : ''} ${seconds} second${seconds !== 1 ? 's' : ''}`;
 }
 
+
+export function calculateTotalUptime(timeAdded: string): string {
+  const now = new Date();
+  const added = new Date(timeAdded);
+  const diffMs = now.getTime() - added.getTime();
+  
+  const hours = Math.floor(diffMs / (1000 * 60 * 60));
+  const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
+  
+  return `${hours} hours ${minutes} minutes ${seconds} seconds`;
+}
+
+export function formatTimestamp(date: string | Date): string {
+  return new Date(date).toLocaleString();
+}
+

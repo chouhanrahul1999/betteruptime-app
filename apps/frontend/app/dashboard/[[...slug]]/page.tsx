@@ -27,10 +27,17 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (isMonitorView && monitorId) {
+      const fetchDetails = () => {
+        monitorApi.getById(monitorId).then(setMonitorDetails);
+      };
+
       setDetailsLoading(true);
-      monitorApi.getById(monitorId)
-        .then(setMonitorDetails)
-        .finally(() => setDetailsLoading(false));
+      fetchDetails();
+      setDetailsLoading(false);
+
+      const interval = setInterval(fetchDetails, 180000); // 3 minutes
+
+      return () => clearInterval(interval);
     }
   }, [isMonitorView, monitorId]);
 
@@ -63,7 +70,7 @@ export default function Dashboard() {
             statusColor={currentMonitor.statusColor || "bg-green-500"}
             onBack={() => router.push("/dashboard")}
           />
-          <MonitorStats data={monitorDetails} />
+          <MonitorStats data={monitorDetails} timeAdded={currentMonitor.time_added} />
           <ResponseTimesChart data={monitorDetails?.responseTimes} />
           <UptimeTable data={monitorDetails?.uptimeStats} />
         </div>
