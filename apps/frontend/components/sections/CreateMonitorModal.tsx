@@ -10,17 +10,39 @@ import {
   DialogTrigger,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { ChevronDown, Globe, Clock } from "lucide-react";
+import { ChevronDown, Globe, Clock, Monitor } from "lucide-react";
+import { useState } from "react";
+import { monitorApi } from "@/lib/api";
 
 interface CreateMonitorModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSuccess?: () => void;
 }
 
 export function CreateMonitorModal({
   open,
   onOpenChange,
+  onSuccess,
 }: CreateMonitorModalProps) {
+  const [url, setUrl] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleCreate = async () => {
+    if (!url) return;
+
+    setLoading(true);
+    try {
+      await monitorApi.create(url);
+      setUrl("");
+      onOpenChange(false);
+      onSuccess?.();
+    } catch (err) {
+      console.error("Failed to create monitor:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
@@ -29,11 +51,11 @@ export function CreateMonitorModal({
           <ChevronDown size={16} className="ml-1" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="bg-slate-950 border-zinc-800/50 text-white sm:max-w-[480px]">
+      <DialogContent className="bg-slate-950   border-zinc-800/50 text-white sm:max-w-[480px]">
         <DialogHeader className="space-y-3 pb-6">
-          <div className="flex items-start gap-3">
-            <div className="p-2.5 bg-indigo-500/10 rounded-lg ring-1 ring-indigo-500/20">
-              <Globe className="w-5 h-5 text-indigo-400" />
+          <div className="flex items-start  gap-3">
+            <div className="p-2.5 mt-1 bg-indigo-500/10 rounded-lg ring-1 ring-indigo-500/20">
+              <Monitor className="w-5 h-5  text-indigo-400" />
             </div>
             <div className="flex-1">
               <DialogTitle className="text-xl font-semibold">
@@ -46,7 +68,7 @@ export function CreateMonitorModal({
           </div>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className="space-y-7">
           <div className="space-y-2.5">
             <label className="text-sm font-medium text-slate-300 block">
               Website URL
@@ -57,6 +79,8 @@ export function CreateMonitorModal({
                 size={18}
               />
               <Input
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
                 placeholder="https://example.com"
                 className="w-full bg-[#1a1c28] border-[#2a2d3a] text-white placeholder:text-gray-600 h-12 rounded-xl pl-11 pr-4"
               />
@@ -70,7 +94,7 @@ export function CreateMonitorModal({
             </span>
           </div>
 
-          <div className="flex gap-3 pt-2">
+          <div className="flex gap-3 py-2">
             <Button
               variant="outline"
               className="flex-1 border-slate-700 hover:bg-slate-800 text-white"
@@ -78,8 +102,12 @@ export function CreateMonitorModal({
             >
               Cancel
             </Button>
-            <Button className="flex-1 bg-indigo-600 hover:bg-indigo-700">
-              Create Monitor
+            <Button
+              className="flex-1 bg-indigo-600 hover:bg-indigo-700"
+              onClick={handleCreate}
+              disabled={loading || !url}
+            >
+              {loading ? "Creating..." : "Create Monitor"}
             </Button>
           </div>
         </div>

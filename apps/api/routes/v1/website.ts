@@ -36,7 +36,7 @@ router.get("/status/:websiteId", authMiddleware, async (req, res) => {
             created_at: "desc",
           },
         ],
-        take: 10,
+        take: 100,
       },
     },
   });
@@ -49,14 +49,20 @@ router.get("/status/:websiteId", authMiddleware, async (req, res) => {
     url: website.url,
     id: website.id,
     user_id: website.user_id,
+    ticks: website.ticks,
   });
 });
 
 router.get("/websites", authMiddleware, async (req, res) => {
-  
-  const websites = prismaClient.website.findMany({
+  const websites = await prismaClient.website.findMany({
     where: {
       user_id: req.userId,
+    },
+    include: {
+      ticks: {
+        orderBy: { created_at: "desc" },
+        take: 1,
+      },
     },
   });
 

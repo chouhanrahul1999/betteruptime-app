@@ -1,4 +1,3 @@
-import "dotenv/config";
 import { xBulk } from "redisstream/client";
 import { prismaClient } from "store/client";
 
@@ -9,18 +8,14 @@ async function main() {
       id: true,
     },
   });
-  console.log(website.length)
+  console.log(website.length);
   await xBulk(
     website.map((w) => ({
       url: w.url,
       id: w.id,
     }))
   );
-
-
-  setInterval(() => {
-    main()
-  }, 3 * 1000 * 60)
 }
 
-main()
+main();
+setInterval(main, 3 * 60 * 1000);

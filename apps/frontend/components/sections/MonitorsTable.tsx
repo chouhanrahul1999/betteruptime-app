@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 
 interface Monitor {
-  id: number
+  id: string | number
   name: string
-  status: 'up' | 'down'
+  status: 'up' | 'down' | 'unknown'
   uptime: string
   statusColor: string
   interval: string
@@ -63,7 +63,7 @@ export function MonitorsTable({ monitors, onCreateMonitor }: MonitorsTableProps)
               <div className="flex-1 min-w-0">
                 <div className="text-white font-normal text-[15px] leading-tight">{monitor.name}</div>
                 <div className="text-slate-400 text-xs mt-1 leading-tight">
-                  {monitor.status === 'up' ? 'Up' : 'Down'} · {monitor.uptime}
+                  {monitor.status === 'up' ? 'Up' : monitor.status === 'down' ? 'Down' : 'Unknown'} · {monitor.uptime}
                 </div>
               </div>
             </div>
