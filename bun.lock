@@ -79,6 +79,7 @@
     "apps/pusher": {
       "name": "pusher",
       "dependencies": {
+        "dotenv": "^17.2.3",
         "redisstream": "*",
       },
       "devDependencies": {

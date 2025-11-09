@@ -1,30 +1,28 @@
-import { Shield, Calendar, Zap, Monitor, Activity, Radio, Grid2X2, ChevronRight, BarChart3, Bell, MessageCircle, Info, LayoutGrid, PanelLeftClose, CreditCard, SquareStack, User } from "lucide-react"
+"use client"
+
+import { Shield, Calendar, Zap, Monitor, Activity, Radio, Grid2X2, ChevronRight, BarChart3, Bell, MessageCircle, Info, LayoutGrid, PanelLeftClose, CreditCard, SquareStack, User, Settings2, Grid2x2Plus, Users } from "lucide-react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 const leftBarIcons = [
   { icon: LayoutGrid, active: false },
-  { icon: CreditCard, active: true },
-  { icon: SquareStack, active: false },
   { icon: Monitor, active: false },
-  { icon: SquareStack, active: false },
+  { icon: Settings2 , active: false },
 ]
 
 const items = [
   { title: "Incidents", url: "/dashboard/incidents", icon: Shield },
-  { title: "Who's on-call?", url: "/dashboard/oncall", icon: Calendar },
   { title: "Escalation policies", url: "/dashboard/escalation", icon: Zap },
   { title: "Monitors", url: "/dashboard/monitors", icon: Monitor },
-  { title: "Heartbeats", url: "/dashboard/heartbeats", icon: Activity },
   { title: "Status pages", url: "/dashboard/status", icon: Radio },
-  { title: "Integrations", url: "/dashboard/integrations", icon: Grid2X2, hasSubmenu: true },
-  { title: "Reporting", url: "/dashboard/reporting", icon: BarChart3 },
+  { title: "Integrations", url: "/dashboard/integrations", icon: Grid2x2Plus, hasSubmenu: true },
+ 
 ]
 
 const bottomIcons = [
   { icon: Bell, hasNotification: true },
-  { icon: MessageCircle, hasNotification: false },
   { icon: Info, hasNotification: false },
-  { icon: LayoutGrid, hasNotification: false },
+  { icon: Users, hasNotification: false },
 ]
 
 interface AppSidebarProps {
@@ -33,6 +31,8 @@ interface AppSidebarProps {
 }
 
 export function AppSidebar({ isOpen = true, onToggle }: AppSidebarProps) {
+  const pathname = usePathname()
+
   return (
     <div className="h-screen flex">
       {/* Left icon bar - Always visible */}
@@ -100,21 +100,24 @@ export function AppSidebar({ isOpen = true, onToggle }: AppSidebarProps) {
         {/* Navigation */}
         <nav className={`flex-1 overflow-y-auto py-3`}>
           <div className={`flex flex-col ${isOpen ? 'px-3 gap-1' : 'items-center gap-3 px-2'}`}>
-            {items.map((item) => (
-              <Link
-                key={item.title}
-                href={item.url}
-                className={`flex items-center justify-between text-sm text-slate-200 hover:bg-slate-700/50 rounded-md transition-colors group ${
-                  isOpen ? 'h-9 px-3' : 'w-9 h-9 justify-center'
-                }`}
-              >
-                <div className={`flex items-center ${isOpen ? 'gap-3' : ''}`}>
-                  <item.icon size={18} strokeWidth={1.5} className="text-slate-400" />
-                  {isOpen && <span>{item.title}</span>}
-                </div>
-                {isOpen && item.hasSubmenu && <ChevronRight size={14} strokeWidth={2} className="text-slate-500" />}
-              </Link>
-            ))}
+            {items.map((item) => {
+              const isActive = pathname === item.url
+              return (
+                <Link
+                  key={item.title}
+                  href={item.url}
+                  className={`flex items-center justify-between text-sm rounded-md transition-colors group ${
+                    isOpen ? 'h-9 px-3' : 'w-9 h-9 justify-center'
+                  } ${isActive ? 'bg-slate-700/70 text-white' : 'text-slate-200 hover:bg-slate-700/50'}`}
+                >
+                  <div className={`flex items-center ${isOpen ? 'gap-3' : ''}`}>
+                    <item.icon size={18} strokeWidth={1.5} className="text-slate-400" />
+                    {isOpen && <span>{item.title}</span>}
+                  </div>
+                  {isOpen && item.hasSubmenu && <ChevronRight size={14} strokeWidth={2} className="text-slate-500" />}
+                </Link>
+              )
+            })}
           </div>
         </nav>
       </div>

@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { xBulk } from "redisstream/client";
 import { prismaClient } from "store/client";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { CreateMonitorModal } from "@/components/sections/CreateMonitorModal";
 import { MonitorsTable } from "@/components/sections/MonitorsTable";
@@ -12,6 +12,7 @@ import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useMonitors } from "@/hooks/use-monitors";
 import { monitorApi } from "@/lib/api";
+import { Button } from "@/components/ui/button";
 
 export default function Dashboard() {
   const [open, setOpen] = useState(false);
@@ -24,6 +25,10 @@ export default function Dashboard() {
   const isMonitorView = pathParts[1] === "monitor";
   const monitorId = pathParts[2];
   const currentMonitor = monitors.find((m) => m.id === monitorId);
+  const isEscalationView = pathParts[1] === "escalation";
+  const isIncidentsView = pathParts[1] === "incidents";
+  const isStatusPageView = pathParts[1] === "status";
+  const isIntegrationsView = pathParts[1] === "integrations";
 
   useEffect(() => {
     if (isMonitorView && monitorId) {
@@ -64,7 +69,66 @@ export default function Dashboard() {
       </div>
     );
   }
+  if (isEscalationView) {
+    return (
+      <div className="bg-slate-950 text-white p-8">
+       
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold"> Escalation Policies </h1>
+        <div className="flex items-center gap-3">
+          <Button variant="outline">
+            <Plus size={16} className="mr-2" />
+            Add Escalation Policy
+          </Button>
+        </div>
+      </div>
+    </div>
+    );
+  }
 
+  if (isIncidentsView) {
+    return (
+      <div className="bg-slate-950 text-white p-8">
+       
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-bold">Incidents </h1>
+          <div className="flex items-center gap-3">
+            <Button variant="outline">
+              <Plus size={16} className="mr-2" />
+              Add Incident
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isStatusPageView) {
+    return (
+      <div className="bg-slate-950 text-white p-8">
+       
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-bold">Status Page </h1>
+          <div className="flex items-center gap-3">
+            <Button variant="outline">
+              <Plus size={16} className="mr-2" />
+              Add Status Page
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isIntegrationsView) {
+    return (
+      <div className="bg-slate-950 text-white p-8">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-bold">Integrations </h1>
+        </div>
+      </div>
+    );
+  }
   if (isMonitorView && currentMonitor) {
     return (
       <div className="bg-slate-950 text-white p-8">
