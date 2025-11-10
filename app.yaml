@@ -1,0 +1,40 @@
+kind: wasmer.io/App.v0
+name: betteruptime-app
+package: chouhanrahul1999/betteruptime-app
+
+# Frontend (Next.js)
+services:
+  - name: frontend
+    source: apps/frontend
+    command: npm run start
+    port: 3000
+    env:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: https://betteruptime-app.wasmer.app/api
+
+  # API (Express)
+  - name: api
+    source: apps/api
+    command: bun index.ts
+    port: 3001
+    env:
+      NODE_ENV: production
+      DATABASE_URL: $DATABASE_URL
+      JWT_SECRET: $JWT_SECRET
+
+# Database (Postgres)
+databases:
+  - name: postgres
+    type: postgres
+    version: "16"
+
+# Redis
+redis:
+  - name: redis
+    version: "7"
+
+# Environment variables
+env:
+  DATABASE_URL: postgres://user:pass@postgres:5432/uptime
+  JWT_SECRET: your-secret-key-here
+  REDIS_URL: redis://redis:6379
