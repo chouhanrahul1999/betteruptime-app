@@ -1,0 +1,21 @@
+[package]
+name = "chouhanrahul1999/betteruptime-app"
+version = "0.1.0"
+description = "Website uptime monitoring application"
+
+[dependencies]
+
+[fs]
+preopens = { "." = "." }
+
+[[command]]
+name = "start"
+module = "frontend"
+runner = "https://webc.org/runner/wasi"
+
+[command.annotations.wasi]
+env = ["NODE_ENV=production"]
+main-args = ["-c", "cd apps/frontend && npm install && npm run build && npm start"]
+
+[command.annotations.wasi.http]
+port = 3000
