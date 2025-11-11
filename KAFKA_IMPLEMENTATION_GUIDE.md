@@ -357,7 +357,7 @@ export class KafkaConsumer {
     });
 
     await this.consumer.run({
-      eachMessage: async ({ topic, partition, message }: EachMessagePayload) => {
+      eachMessage: async ({ topic, partiaition, message }: EachMessagePayload) => {
         try {
           const event = JSON.parse(message.value?.toString() || '{}');
           console.log(`✓ Received event from ${topic}:`, event.type);

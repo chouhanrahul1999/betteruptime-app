@@ -36,7 +36,7 @@ export function AppSidebar({ isOpen = true, onToggle }: AppSidebarProps) {
   return (
     <div className="h-screen flex">
       {/* Left icon bar - Always visible */}
-      <div className="w-[52px] bg-slate-900/50 flex flex-col items-center py-3 border-r border-slate-700/20 shadow-[2px_0_12px_rgba(0,0,0,0.4)]">
+      <div className="w-[52px] bg-slate-900/30 flex flex-col items-center py-3 border-r border-slate-700/20 shadow-[2px_0_12px_rgba(0,0,0,0.4)]">
         {/* Top app icons */}
         <div className="flex flex-col items-center gap-2 mb-auto">
           {leftBarIcons.map((item, idx) => (
@@ -74,7 +74,7 @@ export function AppSidebar({ isOpen = true, onToggle }: AppSidebarProps) {
       </div>
 
       {/* Main sidebar - Collapsible */}
-      <div className={`bg-slate-900/30 flex flex-col relative border-r border-slate-700/20 shadow-[2px_0_16px_rgba(0,0,0,0.3)] ${isOpen ? 'w-[230px]' : 'w-[50px]'}`}>
+      <div className={`bg-slate-900/50 flex flex-col relative border-r border-slate-700/20 shadow-[2px_0_16px_rgba(0,0,0,0.3)] ${isOpen ? 'w-[230px]' : 'w-[50px]'}`}>
         {/* Header */}
         {isOpen && (
           <div className="h-[52px] flex items-center justify-between px-4">

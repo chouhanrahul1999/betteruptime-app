@@ -15,6 +15,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - uptime-network
 
   redis:
     image: redis:7-alpine
@@ -28,7 +30,44 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - uptime-network
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    volumes:
+      - zookeeper_data:/var/lib/zookeeper/data
+    networks: 
+      - uptime-network
+    restart: unless-stopped
+  
+  kafka:
+    image: wurstmeister/kafka:latest
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: localhost
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+    networks:
+      - uptime-network
+    restart: unless-stopped
+    
+networks:
+  uptime-network:
+    driver: bridge
 
 volumes:
   postgres_data:
   redis_data:
+  zookeeper_data:
+  kafka_data:

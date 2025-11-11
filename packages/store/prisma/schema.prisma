@@ -14,36 +14,75 @@ datasource db {
 }
 
 model user {
-  id       String    @id @default(uuid())
-  username String    @unique
-  password String
-  websites website[]
+  id           String        @id @default(uuid())
+  username     String        @unique
+  password     String
+  email        String        @unique
+  websites     website[]
+  integrations integration[]
+}
+
+model integration {
+  id         String             @id @default(uuid())
+  user_id    String
+  type       IntegrationType
+  config     Json
+  enabled    Boolean            @default(true)
+  created_at DateTime           @default(now())
+  user       user               @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  logs       notification_log[]
+}
+
+enum IntegrationType {
+  EMAIL
+  WEBHOOK
+  SLACK
+  DISCORD
+  TELEGRAM
+}
+
+model notification_log {
+  id              String             @id @default(uuid())
+  event_type      String
+  integration_id String
+  status          NotificationStatus
+  payload         Json
+  error_message   String?
+  sent_at         DateTime           @default(now())
+  integration      integration        @relation(fields: [integration_id], references: [id], onDelete: Cascade)
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+  RETRYING
 }
 
 model website {
-  id        String        @id @default(uuid())
-  url       String
+  id         String         @id @default(uuid())
+  url        String
   time_added DateTime
-  ticks     Website_tick[]
-  user      user         @relation(fields: [user_id], references: [id])
+  ticks      Website_tick[]
+  user       user           @relation(fields: [user_id], references: [id])
   user_id    String
 }
 
 model region {
-  id     String        @id @default(uuid())
+  id     String         @id @default(uuid())
   name   String
-  tickes Website_tick[]
+  ticks Website_tick[]
 }
 
 model Website_tick {
-  id               String        @id @default(uuid())
+  id               String         @id @default(uuid())
   response_time_ms Int
   status           Website_status
-  region           region        @relation(fields: [region_id], references: [id])
-  website          website       @relation(fields: [website_id], references: [id])
+  region           region         @relation(fields: [region_id], references: [id])
+  website          website        @relation(fields: [website_id], references: [id])
   region_id        String
   website_id       String
-  created_at        DateTime      @default(now())
+  created_at       DateTime       @default(now())
 }
 
 enum Website_status {
