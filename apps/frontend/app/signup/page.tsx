@@ -10,6 +10,7 @@ import { Loader2, Eye, EyeOff } from "lucide-react";
 
 export default function SignupPage() {
   const router = useRouter();
+  const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -31,6 +32,7 @@ export default function SignupPage() {
 
     try {
       const response = await axios.post(`${BACK_URL}/user/signup`, {
+        email,
         username,
         password,
       });
@@ -42,6 +44,9 @@ export default function SignupPage() {
         const fieldErrors = e.response.data.errors.fieldErrors;
         const errorMessages = [];
         
+        if (fieldErrors?.email) {
+          errorMessages.push(`Email: ${fieldErrors.email.join(", ")}`);
+        }
         if (fieldErrors?.username) {
           errorMessages.push(`Username: ${fieldErrors.username.join(", ")}`);
         }
@@ -119,10 +124,23 @@ export default function SignupPage() {
                 E-mail
               </label>
               <Input
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                type="email"
+                placeholder="Your work e-mail"
+                className="w-full bg-[#1a1c28] border-[#2a2d3a] text-white placeholder:text-gray-600 h-12 rounded-xl px-4"
+              />
+            </div>
+
+            <div>
+              <label className="text-gray-400 text-sm block mb-2.5">
+                Username
+              </label>
+              <Input
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 type="text"
-                placeholder="Your work e-mail"
+                placeholder="Choose a username"
                 className="w-full bg-[#1a1c28] border-[#2a2d3a] text-white placeholder:text-gray-600 h-12 rounded-xl px-4"
               />
             </div>

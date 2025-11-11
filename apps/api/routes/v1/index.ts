@@ -1,6 +1,7 @@
 import { Router } from "express";
 import websiteRouter from "./website";
-import userRouter from "./user"
+import userRouter from "./user";
+import integrationRoutes from './integration';
 
 const router = Router();
 
@@ -9,6 +10,7 @@ router.get("/", (req, res) => {
 });
 
 router.use("/website", websiteRouter);
-router.use("/user", userRouter)
+router.use("/user", userRouter);
+router.use("/integrations", integrationRoutes);
 
 export default router;

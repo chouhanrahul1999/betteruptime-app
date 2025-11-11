@@ -49,14 +49,18 @@ async function fetchWebsite(url: string, websiteId: string, regionId: string) {
     });
 
     // Publish UP event to Kafka
-    await publishEvent(TOPICS.WEBSITE_EVENTS, {
-      type: EVENT_TYPES.WEBSITE_UP,
-      websiteId,
-      url,
-      responseTime,
-      regionId,
-      timestamp: Date.now(),
-    });
+    try {
+      await publishEvent(TOPICS.WEBSITE_EVENTS, {
+        type: EVENT_TYPES.WEBSITE_UP,
+        websiteId,
+        url,
+        responseTime,
+        regionId,
+        timestamp: Date.now(),
+      });
+    } catch (kafkaError) {
+      console.log('Failed to publish UP event to Kafka, continuing...');
+    }
 
   } catch (error) {
     const endTime = Date.now();
@@ -80,15 +84,19 @@ async function fetchWebsite(url: string, websiteId: string, regionId: string) {
 
     // Publish DOWN event to Kafka
     if (website) {
-      await publishEvent(TOPICS.WEBSITE_EVENTS, {
-        type: EVENT_TYPES.WEBSITE_DOWN,
-        websiteId,
-        userId: website.user_id,
-        url,
-        responseTime,
-        regionId,
-        timestamp: Date.now(),
-      });
+      try {
+        await publishEvent(TOPICS.WEBSITE_EVENTS, {
+          type: EVENT_TYPES.WEBSITE_DOWN,
+          websiteId,
+          userId: website.user_id,
+          url,
+          responseTime,
+          regionId,
+          timestamp: Date.now(),
+        });
+      } catch (kafkaError) {
+        console.log('Failed to publish DOWN event to Kafka, continuing...');
+      }
     }
   }
 }

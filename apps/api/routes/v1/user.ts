@@ -1,5 +1,5 @@
 import { prismaClient } from "store/client";
-import { AuthSchema } from "../../types";
+import { SignupSchema, SigninSchema } from "../../types";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"
 import { Router } from "express";
@@ -7,7 +7,7 @@ import { Router } from "express";
 const router = Router();
 
 router.post("/signup", async (req, res) => {
-  const result = AuthSchema.safeParse(req.body);
+  const result = SignupSchema.safeParse(req.body);
   if (!result.success) {
     const errors = result.error.flatten();
     return res.status(400).json({
@@ -22,6 +22,7 @@ router.post("/signup", async (req, res) => {
       data: {
         username: result.data.username,
         password: hashedPassword,
+        email: result.data.email
       },
     });
     return res.status(200).json({
@@ -41,7 +42,7 @@ router.post("/signup", async (req, res) => {
 });
 
 router.post("/signin", async (req, res) => {
-  const result = AuthSchema.safeParse(req.body);
+  const result = SigninSchema.safeParse(req.body);
 
   if (!result.success) {
     const errors = result.error.flatten();
@@ -59,7 +60,7 @@ router.post("/signin", async (req, res) => {
 
   if (!user) {
     return res.status(401).json({
-      message: "Invalid cradentials",
+      message: "Invalid credentials",
     });
   }
 
