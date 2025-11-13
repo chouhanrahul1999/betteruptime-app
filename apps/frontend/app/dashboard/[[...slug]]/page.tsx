@@ -13,6 +13,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useMonitors } from "@/hooks/use-monitors";
 import { monitorApi } from "@/lib/api";
 import { Button } from "@/components/ui/button";
+import { IntegrationsPage } from "@/components/integrations/IntegrationsPage";
 
 export default function Dashboard() {
   const [open, setOpen] = useState(false);
@@ -122,11 +123,7 @@ export default function Dashboard() {
 
   if (isIntegrationsView) {
     return (
-      <div className="bg-slate-950 text-white p-8">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold">Integrations </h1>
-        </div>
-      </div>
+     <IntegrationsPage />
     );
   }
   if (isMonitorView && currentMonitor) {
@@ -170,6 +167,7 @@ export default function Dashboard() {
       <MonitorsTable
         monitors={monitors}
         onCreateMonitor={() => setOpen(true)}
+        onRefresh={reFetch}
       />
     </div>
   );

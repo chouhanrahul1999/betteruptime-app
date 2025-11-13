@@ -80,4 +80,28 @@ router.get("/websites", authMiddleware, async (req, res) => {
   });
 });
 
+router.delete("/:websiteId", authMiddleware, async (req, res) => {
+  try {
+    // First delete all related ticks
+    await prismaClient.website_tick.deleteMany({
+      where: {
+        website_id: req.params.websiteId,
+      },
+    });
+    
+    // Then delete the website
+    await prismaClient.website.deleteMany({
+      where: {
+        id: req.params.websiteId,
+        user_id: req.userId!,
+      },
+    });
+    
+    res.json({ success: true });
+  } catch (error: any) {
+    console.error('Delete error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export default router;
