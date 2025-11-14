@@ -1,51 +1,116 @@
-"use client"
+"use client";
 
-import { Shield, Calendar, Zap, Monitor, Activity, Radio, Grid2X2, ChevronRight, BarChart3, Bell, MessageCircle, Info, LayoutGrid, PanelLeftClose, CreditCard, SquareStack, User, Settings2, Grid2x2Plus, Users } from "lucide-react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import {
+  Shield,
+  Zap,
+  SlidersHorizontal,
+  Radio,
+  LayoutDashboard,
+  ChevronRight,
+  Bell,
+  Info,
+  ArrowDownWideNarrow,
+  PanelLeftClose,
+  GalleryVerticalEnd,
+  Globe,
+  SquareTerminal,
+  Grid2x2Plus,
+  TriangleAlert,
+  Columns3Cog,
+  Users,
+  LucideIcon,
+} from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
 
-const leftBarIcons = [
-  { icon: LayoutGrid, active: false },
-  { icon: Monitor, active: false },
-  { icon: Settings2 , active: false },
-]
+interface MenuItem {
+  title: string;
+  url: string;
+  icon: LucideIcon;
+  hasSubmenu?: boolean;
+}
 
-const items = [
+const items: MenuItem[] = [
   { title: "Incidents", url: "/dashboard/incidents", icon: Shield },
-  { title: "Escalation policies", url: "/dashboard/escalation", icon: Zap },
-  { title: "Monitors", url: "/dashboard/monitors", icon: Monitor },
+  { title: "Escalation policies", url: "/dashboard/escalation", icon: ArrowDownWideNarrow },
+  { title: "Monitors", url: "/dashboard/monitors", icon: Globe },
   { title: "Status pages", url: "/dashboard/status", icon: Radio },
-  { title: "Integrations", url: "/dashboard/integrations", icon: Grid2x2Plus, hasSubmenu: true },
- 
-]
+  {
+    title: "Integrations",
+    url: "/dashboard/integrations",
+    icon: Grid2x2Plus,
+    hasSubmenu: true,
+  },
+];
+
+const Dashboard: MenuItem[] = [
+  { title: "Dashboard", url: "/dashboard", icon: GalleryVerticalEnd },
+  { title: "Logs & traces", url: "/dashboard/logs", icon: SquareTerminal },
+  { title: "Alert", url: "/dashboard/monitors", icon: TriangleAlert },
+];
+
+const Setting: MenuItem[] = [
+  { title: "Settings", url: "/dashboard/settings", icon: Columns3Cog },
+];
 
 const bottomIcons = [
   { icon: Bell, hasNotification: true },
   { icon: Info, hasNotification: false },
   { icon: Users, hasNotification: false },
-]
+];
 
 interface AppSidebarProps {
-  isOpen?: boolean
-  onToggle?: () => void
+  isOpen?: boolean;
+  onToggle?: () => void;
 }
 
 export function AppSidebar({ isOpen = true, onToggle }: AppSidebarProps) {
-  const pathname = usePathname()
+  const pathname = usePathname();
+  const [activeView, setActiveView] = useState<'dashboard' | 'items' | 'settings'>('items');
+
+  const leftBarIcons = [
+    { icon: LayoutDashboard, view: 'dashboard' as const },
+    { icon: Zap, view: 'items' as const },
+    { icon: SlidersHorizontal, view: 'settings' as const },
+  ];
+
+  const getCurrentItems = (): MenuItem[] => {
+    switch (activeView) {
+      case 'dashboard':
+        return Dashboard;
+      case 'settings':
+        return Setting;
+      default:
+        return items;
+    }
+  };
+
+  const getTitle = (): string => {
+    switch (activeView) {
+      case 'dashboard':
+        return 'Dashboard';
+      case 'settings':
+        return 'Settings';
+      default:
+        return 'Uptime';
+    }
+  };
 
   return (
     <div className="h-screen flex">
       {/* Left icon bar - Always visible */}
-      <div className="w-[52px] bg-slate-900/30 flex flex-col items-center py-3 border-r border-slate-700/20 shadow-[2px_0_12px_rgba(0,0,0,0.4)]">
+      <div className="w-[52px] bg-slate-900/10 flex flex-col items-center py-3 border-r border-slate-700/20 shadow-[2px_0_12px_rgba(0,0,0,0.4)]">
         {/* Top app icons */}
         <div className="flex flex-col items-center gap-2 mb-auto">
           {leftBarIcons.map((item, idx) => (
             <button
               key={idx}
+              onClick={() => setActiveView(item.view)}
               className={`w-9 h-9 rounded-md flex items-center justify-center transition-colors ${
-                item.active
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-transparent text-slate-400 hover:bg-slate-700/50'
+                activeView === item.view
+                  ? "bg-slate-700/50 text-white"
+                  : "bg-transparent text-slate-400 hover:bg-slate-700/50"
               }`}
             >
               <item.icon size={18} strokeWidth={2} />
@@ -66,61 +131,78 @@ export function AppSidebar({ isOpen = true, onToggle }: AppSidebarProps) {
               )}
             </button>
           ))}
-          {/* User avatar */}
-          <button className="w-9 h-9 bg-lenear-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center text-white mt-1">
-            <User size={18} strokeWidth={2.5} />
-          </button>
         </div>
       </div>
 
       {/* Main sidebar - Collapsible */}
-      <div className={`bg-slate-900/50 flex flex-col relative border-r border-slate-700/20 shadow-[2px_0_16px_rgba(0,0,0,0.3)] ${isOpen ? 'w-[230px]' : 'w-[50px]'}`}>
+      <div
+        className={`bg-slate-900/25 flex flex-col relative border-r border-slate-700/20 shadow-[2px_0_16px_rgba(0,0,0,0.3)] ${isOpen ? "w-[230px]" : "w-[50px]"}`}
+      >
         {/* Header */}
         {isOpen && (
           <div className="h-[52px] flex items-center justify-between px-4">
-            <span className="text-white font-semibold text-base">Uptime</span>
-            <button onClick={onToggle} className="text-slate-400 hover:text-slate-300 transition-colors">
+            <span className="text-white font-semibold text-base">{getTitle()}</span>
+            <button
+              onClick={onToggle}
+              className="text-slate-400 hover:text-slate-300 transition-colors"
+            >
               <PanelLeftClose size={16} strokeWidth={2} />
             </button>
           </div>
         )}
-        
+
         {/* Collapse button when collapsed */}
         {!isOpen && (
           <div className="h-[52px] flex items-center justify-center">
-            <button 
+            <button
               onClick={onToggle}
               className="text-slate-400 hover:text-white transition-colors"
             >
-              <PanelLeftClose size={16} strokeWidth={2} className="rotate-180" />
+              <PanelLeftClose
+                size={16}
+                strokeWidth={2}
+                className="rotate-180"
+              />
             </button>
           </div>
         )}
 
         {/* Navigation */}
         <nav className={`flex-1 overflow-y-auto py-3`}>
-          <div className={`flex flex-col ${isOpen ? 'px-3 gap-1' : 'items-center gap-3 px-2'}`}>
-            {items.map((item) => {
-              const isActive = pathname === item.url
+          <div
+            className={`flex flex-col ${isOpen ? "px-3 gap-1" : "items-center gap-3 px-2"}`}
+          >
+            {getCurrentItems().map((item) => {
+              const isActive = pathname === item.url;
               return (
                 <Link
                   key={item.title}
                   href={item.url}
                   className={`flex items-center justify-between text-sm rounded-md transition-colors group ${
-                    isOpen ? 'h-9 px-3' : 'w-9 h-9 justify-center'
-                  } ${isActive ? 'bg-slate-700/70 text-white' : 'text-slate-200 hover:bg-slate-700/50'}`}
+                    isOpen ? "h-9 px-3" : "w-9 h-9 justify-center"
+                  } ${isActive ? "bg-slate-700/70 text-white" : "text-slate-200 hover:bg-slate-700/50"}`}
                 >
-                  <div className={`flex items-center ${isOpen ? 'gap-3' : ''}`}>
-                    <item.icon size={18} strokeWidth={1.5} className="text-slate-400" />
+                  <div className={`flex items-center ${isOpen ? "gap-4" : ""}`}>
+                    <item.icon
+                      size={18}
+                      strokeWidth={1.5}
+                      className="text-slate-400"
+                    />
                     {isOpen && <span>{item.title}</span>}
                   </div>
-                  {isOpen && item.hasSubmenu && <ChevronRight size={14} strokeWidth={2} className="text-slate-500" />}
+                  {isOpen && 'hasSubmenu' in item && item.hasSubmenu && (
+                    <ChevronRight
+                      size={14}
+                      strokeWidth={2}
+                      className="text-slate-500"
+                    />
+                  )}
                 </Link>
-              )
+              );
             })}
           </div>
         </nav>
       </div>
     </div>
-  )
+  );
 }
