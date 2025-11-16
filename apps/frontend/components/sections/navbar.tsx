@@ -67,31 +67,33 @@ export function Navigation() {
                     <li className="row-span-3">
                       <NavigationMenuLink asChild>
                         <a
-                          className="from-muted/50 to-muted flex h-full w-full flex-col justify-end rounded-md bg-linear-to-b p-4 no-underline outline-hidden transition-all duration-200 select-none focus:shadow-md md:p-6"
-                          href="/"
+                          className="flex h-full w-full flex-col justify-end rounded-lg bg-gradient-to-br from-indigo-600/20 via-slate-800/50 to-slate-900/80 p-6 no-underline outline-none transition-all duration-300 select-none hover:shadow-lg hover:shadow-indigo-500/10 border border-slate-700/30 hover:border-indigo-500/30 group"
+                          href="/dashboard"
                         >
-                          <div className="mb-2 text-lg font-medium sm:mt-4">
-                            shadcn/ui
+                          <div className="flex items-center gap-2 mb-3">
+                            <img
+                              className="w-6 h-6"
+                              src="https://cdn.prod.website-files.com/5e9dc792e1210c5325f7ebbc/64354680f3f50b5758e2cb0d_1642608434799.webp"
+                              alt="BetterUptime"
+                            />
+                            <div className="text-lg font-semibold text-white group-hover:text-indigo-200 transition-colors">
+                              BetterUptime
+                            </div>
                           </div>
-                          <p className="text-muted-foreground text-sm leading-tight">
-                            Beautifully designed components built with Tailwind
-                            CSS.
+                          <p className="text-slate-300 text-sm leading-relaxed group-hover:text-slate-200 transition-colors">
+                            Complete website monitoring solution with real-time alerts, uptime tracking, and performance analytics.
                           </p>
                         </a>
                       </NavigationMenuLink>
                     </li>
-                    <ListItem href="/docs" title="Introduction">
-                      Re-usable components built using Radix UI and Tailwind
-                      CSS.
+                    <ListItem href="/dashboard" title="📊 Dashboard">
+                      View recent monitors, response times overview, and uptime statistics in one place.
                     </ListItem>
-                    <ListItem href="/docs/installation" title="Installation">
-                      How to install dependencies and structure your app.
+                    <ListItem href="/dashboard/monitors" title="🔍 Website Monitoring">
+                      Monitor your websites every 3 minutes with detailed response time tracking.
                     </ListItem>
-                    <ListItem
-                      href="/docs/primitives/typography"
-                      title="Typography"
-                    >
-                      Styles for headings, paragraphs, lists...etc
+                    <ListItem href="/dashboard/integrations" title="🔔 Integrations">
+                      Get notified via Email, Slack, Discord, Telegram, or custom webhooks.
                     </ListItem>
                   </ul>
                 </NavigationMenuContent>
@@ -245,9 +247,12 @@ function ListItem({
   return (
     <li {...props}>
       <NavigationMenuLink asChild>
-        <Link href={href}>
-          <div className="text-sm leading-none font-medium">{title}</div>
-          <p className="text-muted-foreground line-clamp-2 text-sm leading-snug">
+        <Link 
+          href={href}
+          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-slate-800/50 hover:text-white focus:bg-slate-800/50 focus:text-white group"
+        >
+          <div className="text-sm font-medium leading-none text-white group-hover:text-indigo-200 transition-colors">{title}</div>
+          <p className="line-clamp-2 text-sm leading-snug text-slate-400 group-hover:text-slate-300 transition-colors">
             {children}
           </p>
         </Link>

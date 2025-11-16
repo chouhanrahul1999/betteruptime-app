@@ -66,11 +66,11 @@ export function IntegrationCard({
     }
   };
   return (
-    <Card className="bg-slate-900 border-slate-700 p-4">
-      <div className="flex items-start justify-between mb-4">
+    <Card className="bg-slate-900/60 border-slate-700/50 px-6">
+      <div className="flex items-start justify-between mb-2">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center">
-            <Icon size={20} className="text-slate-400" />
+          <div className="w-11 h-11 bg-slate-800/90 rounded-lg flex items-center justify-center">
+            <Icon size={24} className="text-slate-300" />
           </div>
           <div>
             <h3 className="font-semibold text-white">{integration.type}</h3>
@@ -85,7 +85,7 @@ export function IntegrationCard({
           }`}
         />
       </div>
-      <div className="text-sm text-slate-400 mb-4">
+      <div className="text-sm text-slate-400 mb-2">
         {integration.type === "EMAIL" && `Email: ${integration.config.email}`}
         {integration.type === "WEBHOOK" &&
           `URL: ${integration.config.webhookUrl}`}

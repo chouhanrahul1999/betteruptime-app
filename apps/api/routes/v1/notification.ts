@@ -44,6 +44,24 @@ router.post("/send", async (req, res) => {
   }
 });
 
+router.get("/logs", async (req, res) => {
+  try {
+    const logs = await prismaClient.notification_log.findMany({
+      include: {
+        integration: true,
+      },
+      orderBy: {
+        sent_at: 'desc'
+      }
+    });
+
+    res.json(logs);
+  } catch (error: any) {
+    console.error('Failed to fetch notification logs:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 async function sendEmail(to: string, { subject, body }: { subject: string; body: string }) {
   try {
     await transporter.sendMail({

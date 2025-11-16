@@ -73,14 +73,6 @@ export function MonitorsTable({ monitors, onCreateMonitor, onRefresh }: Monitors
           <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-slate-400 hover:text-white hover:bg-slate-700/50">
             <ListFilter size={14} />
           </Button>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="h-7 w-7 p-0 text-slate-400 hover:text-white hover:bg-slate-700/50"
-            onClick={onCreateMonitor}
-          >
-            <Plus size={14} />
-          </Button>
           <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-slate-400 hover:text-white hover:bg-slate-700/50">
             <Ellipsis size={14} />
           </Button>

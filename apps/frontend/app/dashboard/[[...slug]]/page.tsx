@@ -14,6 +14,9 @@ import { useMonitors } from "@/hooks/use-monitors";
 import { monitorApi } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { IntegrationsPage } from "@/components/integrations/IntegrationsPage";
+import { DashboardPage } from "@/components/sections/DashboardPage";
+import { LogsTracesPage } from "@/components/sections/LogsTracesPage";
+import { AlertPage } from "@/components/sections/AlertPage";
 
 export default function Dashboard() {
   const [open, setOpen] = useState(false);
@@ -24,12 +27,15 @@ export default function Dashboard() {
   const { monitors, loading, error, reFetch } = useMonitors();
   const pathParts = pathname.split("/").filter(Boolean);
   const isMonitorView = pathParts[1] === "monitor";
+  const isDashboardView = pathParts.length === 1; // /dashboard only
   const monitorId = pathParts[2];
   const currentMonitor = monitors.find((m) => m.id === monitorId);
   const isEscalationView = pathParts[1] === "escalation";
   const isIncidentsView = pathParts[1] === "incidents";
   const isStatusPageView = pathParts[1] === "status";
   const isIntegrationsView = pathParts[1] === "integrations";
+  const isLogsView = pathParts[1] === "logs";
+  const isAlertView = pathParts[1] === "alerts";
 
   useEffect(() => {
     if (isMonitorView && monitorId) {
@@ -103,6 +109,15 @@ export default function Dashboard() {
       </div>
     );
   }
+  if (isDashboardView) {
+    return (
+      <DashboardPage 
+        monitors={monitors} 
+        onCreateMonitor={() => setOpen(true)}
+        onRefresh={reFetch}
+      />
+    );
+  }
 
   if (isStatusPageView) {
     return (
@@ -124,6 +139,18 @@ export default function Dashboard() {
   if (isIntegrationsView) {
     return (
      <IntegrationsPage />
+    );
+  }
+  
+  if (isLogsView) {
+    return (
+      <LogsTracesPage monitors={monitors} />
+    );
+  }
+  
+  if (isAlertView) {
+    return (
+      <AlertPage monitors={monitors} />
     );
   }
   if (isMonitorView && currentMonitor) {

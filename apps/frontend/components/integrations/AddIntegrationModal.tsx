@@ -4,10 +4,17 @@ import axios from "axios";
 import { use, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Label } from "../ui/label";
-import { Select, SelectContent, SelectItem } from "../ui/select";
-import { SelectTrigger, SelectValue } from "@radix-ui/react-select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { Mail, Webhook } from "lucide-react";
+import { FaDiscord, FaSlack, FaTelegram } from "react-icons/fa";
 
 interface AddIntegrationModalProps {
   open: boolean;
@@ -30,14 +37,18 @@ export function AddIntegrationModal({
 
     try {
       const token = localStorage.getItem("token");
-      await axios.post("http://localhost:3000/api/v1/integrations", {
-        type,
-        config,
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      await axios.post(
+        "http://localhost:3000/api/v1/integrations",
+        {
+          type,
+          config,
         },
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       onSuccess();
       onOpenChange(false);
@@ -51,31 +62,51 @@ export function AddIntegrationModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-slate-900 text-white border-slate-700">
+      <DialogContent className="bg-slate-900/70 text-white border-slate-700/50">
         <DialogHeader>
-          <DialogTitle>Add Integration</DialogTitle>
+          <DialogTitle className="font-sans tracking-wide text-2xl pb-3">Add Integration</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label>Integration Type</Label>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-2 font-sans tracking-wide">
+            <Label className="pl-1 pb-1">Integration Type</Label>
             <Select value={type} onValueChange={setType}>
-              <SelectTrigger className="bg-slate-800 border-slate-700">
+              <SelectTrigger className="w-full bg-slate-800 border-slate-700">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-slate-800 border-slate-700">
-                <SelectItem value="EMAIL">Email</SelectItem>
-                <SelectItem value="WEBHOOK">Webhook</SelectItem>
-                <SelectItem value="SLACK">Slack</SelectItem>
-                <SelectItem value="DISCORD">Discord</SelectItem>
-                <SelectItem value="TELEGRAM">Telegram</SelectItem>
+                <SelectItem value="EMAIL">
+                  <div className="flex items-center gap-2">
+                    <Mail className="w-4 h-4" /> Email
+                  </div>
+                </SelectItem>
+                <SelectItem value="WEBHOOK">
+                  <div className="flex items-center gap-2">
+                    <Webhook className="w-4 h-4" /> Webhook
+                  </div>
+                </SelectItem>
+                <SelectItem value="SLACK">
+                  <div className="flex items-center gap-2">
+                    <FaSlack className="w-4 h-4" /> Slack
+                  </div>
+                </SelectItem>
+                <SelectItem value="DISCORD">
+                  <div className="flex items-center gap-2">
+                    <FaDiscord className="w-4 h-4" /> Discord
+                  </div>
+                </SelectItem>
+                <SelectItem value="TELEGRAM">
+                  <div className="flex items-center gap-2">
+                    <FaTelegram className="w-4 h-4" /> Telegram
+                  </div>
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           {type === "EMAIL" && (
-            <div>
-              <label>Email Address</label>
+            <div className="space-y-2">
+              <Label className="pl-1 pb-1">Email Address</Label>
               <Input
                 type="email"
                 placeholder="you@example.com"
@@ -92,8 +123,8 @@ export function AddIntegrationModal({
           )}
 
           {type === "WEBHOOK" && (
-            <div>
-              <Label>Webhook URL</Label>
+            <div className="space-y-2">
+              <Label className="pl-1 pb-1">Webhook URL</Label>
               <Input
                 type="url"
                 placeholder="https://your-webhook-url.com"
@@ -106,8 +137,8 @@ export function AddIntegrationModal({
           )}
 
           {type === "SLACK" && (
-            <div>
-              <Label>Slack Webhook URL</Label>
+            <div className="space-y-2">
+              <Label className="pl-1 pb-1">Slack Webhook URL</Label>
               <Input
                 type="url"
                 placeholder="https://hooks.slack.com/services/..."
@@ -123,8 +154,8 @@ export function AddIntegrationModal({
           )}
 
           {type === "DISCORD" && (
-            <div>
-              <Label>Discord Webhook URL</Label>
+            <div className="space-y-2">
+              <Label className="pl-1 pb-1">Discord Webhook URL</Label>
               <Input
                 type="url"
                 placeholder="https://discord.com/api/webhooks/..."
@@ -173,7 +204,7 @@ export function AddIntegrationModal({
             </div>
           )}
 
-          <div className="flex gap-2 pt-4">
+          <div className="flex gap-3 pt-4">
             <Button
               type="button"
               variant={"outline"}

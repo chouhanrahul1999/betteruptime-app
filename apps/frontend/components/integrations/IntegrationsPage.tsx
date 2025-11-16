@@ -40,11 +40,11 @@ export function IntegrationsPage() {
   }
 
   return (
-    <div className="bg-slate-950 text-white p-8">
+    <div className="bg-slate-950 text-white p-8 ">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-bold">Integrations</h1>
-          <p className="text-slate-400 mt-2">
+          <h1 className="text-3xl font-sans tracking-wider font-bold">Integrations</h1>
+          <p className="text-slate-400 font-sans tracking-wide mt-2">
             Connect your notification channels
           </p>
         </div>

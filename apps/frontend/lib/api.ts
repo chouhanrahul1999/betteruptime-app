@@ -29,4 +29,11 @@ export const monitorApi = {
     );
     return data;
   },
+
+  getNotificationLogs: async () => {
+    const { data } = await axios.get(`${BACK_URL}/notifications/logs`, {
+      headers: getAuthHeaders(),
+    });
+    return data;
+  },
 };

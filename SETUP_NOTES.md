@@ -4,29 +4,31 @@
 
 ### 1. Docker Services
 - **File:** `docker-compose.yml`
-- **Services:** Postgres (port 5432), Redis (port 6379)
+- **Services:** Postgres (port 5432), Redis (port 6379), Kafka (port 9092), Zookeeper (port 2181)
 - **Credentials:** 
   - Username: `postgres`
   - Password: `postgres`
   - Database: `uptime`
 
 ### 2. Environment Variables
-All services have `.env` files with correct DATABASE_URL:
+All services have `.env` and `example.env` files with correct DATABASE_URL:
 ```
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/uptime"
 ```
 
 **Files:**
-- `packages/store/.env`
-- `apps/api/.env` (also has JWT_SECRET)
-- `apps/worker/.env`
-- `apps/pusher/.env`
+- `packages/store/.env` & `example.env`
+- `apps/api/.env` & `example.env` (also has JWT_SECRET, Gmail config)
+- `apps/worker/.env` & `example.env`
+- `apps/pusher/.env` & `example.env`
+- `apps/notification-worker/.env` & `example.env` (Kafka + Gmail config)
+- `apps/tests/.env` & `example.env`
 
 ### 3. Start Script
 **File:** `start.sh`
 
 **What it does:**
-1. Starts Docker (Postgres + Redis)
+1. Starts Docker (Postgres + Redis + Kafka + Zookeeper)
 2. Waits 5 seconds
 3. Runs Prisma migrations
 4. Starts all apps with Turborepo
@@ -38,68 +40,61 @@ DATABASE_URL="postgresql://postgres:postgres@localhost:5432/uptime"
 
 ### 4. Running Services
 When you run `./start.sh`, these start automatically:
-- ✅ **Frontend** - http://localhost:3001
-- ✅ **API** - http://localhost:3000
-- ✅ **Worker** - Monitors websites every 3 minutes
+- ✅ **Frontend** - http://localhost:3000
+- ✅ **API** - http://localhost:8000
+- ✅ **Worker** - Monitors websites and publishes to Kafka
+- ✅ **Notification Worker** - Consumes Kafka events and sends alerts
 - ✅ **Pusher** - Pushes websites to Redis queue
 
 ### 5. Database
 - ✅ Migrations applied
-- ✅ Tables created (user, website, website_tick, region)
+- ✅ Tables created (user, website, website_tick, integration, notification_log)
 - ✅ Prisma Client generated
+
+### 6. Kafka System
+- ✅ Kafka and Zookeeper containers
+- ✅ Worker publishes DOWN events to Kafka
+- ✅ Notification worker consumes events and sends alerts
+- ✅ Support for Email, Slack, Discord, Telegram, Webhook notifications
 
 ---
 
-## 🚀 Next: Kafka Notification System
+## 🚀 Current Architecture
 
-### What Needs to Be Added
-
-Refer to `KAFKA_IMPLEMENTATION_GUIDE.md` but note these changes:
-
-#### Phase 1 - Kafka Setup
-**Instead of creating new docker-compose.yml, UPDATE existing one:**
-
-Add to your existing `docker-compose.yml`:
-```yaml
-  zookeeper:
-    image: confluentinc/cp-zookeeper:latest
-    container_name: zookeeper
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-    ports:
-      - "2181:2181"
-
-  kafka:
-    image: confluentinc/cp-kafka:latest
-    container_name: kafka
-    depends_on:
-      - zookeeper
-    ports:
-      - "9092:9092"
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 ```
-
-#### Phase 2 - Database Schema
-**Your current schema already has:**
-- ✅ user table
-- ✅ website table
-- ✅ website_tick table
-- ✅ region table
-
-**Need to ADD:**
-- ❌ integration table
-- ❌ notification_log table
-- ❌ email field to user table
-
-#### Phases 3-7
-Follow the guide as written - no changes needed.
+┌─────────────────────────────────────────────────────────┐
+│                    USER ADDS MONITOR                     │
+└─────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────┐
+│  PUSHER (every 3 min)                                   │
+│  - Fetches all websites from DB                         │
+│  - Pushes to Redis Stream                               │
+└─────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────┐
+│  REDIS STREAM (india, usa)                              │
+└─────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────┐
+│  WORKER (2 regions)                                     │
+│  - Consumes from Redis Stream                           │
+│  - Checks website availability                          │
+│  - Saves to website_tick table                          │
+│  - Publishes DOWN events to Kafka                       │
+└─────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────┐
+│  KAFKA                                                  │
+└─────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────┐
+│  NOTIFICATION WORKER                                    │
+│  - Consumes Kafka events                               │
+│  - Sends Email/Slack/Discord/Telegram/Webhook alerts   │
+│  - Logs notifications to database                       │
+└─────────────────────────────────────────────────────────┘
+```
 
 ---
 
@@ -121,6 +116,8 @@ docker-compose down
 # Docker logs
 docker logs uptime-postgres
 docker logs uptime-redis
+docker logs kafka
+docker logs zookeeper
 
 # App logs are shown in terminal when running ./start.sh
 ```
@@ -153,10 +150,13 @@ cd apps/api && bun --watch index.ts
 # Terminal 3 - Worker
 cd apps/worker && bun --watch index.ts
 
-# Terminal 4 - Pusher
+# Terminal 4 - Notification Worker
+cd apps/notification-worker && bun --watch index.ts
+
+# Terminal 5 - Pusher
 cd apps/pusher && bun --watch index.ts
 
-# Terminal 5 - Frontend
+# Terminal 6 - Frontend
 cd apps/frontend && npm run dev
 ```
 
@@ -172,9 +172,13 @@ cd apps/frontend && npm run dev
 - Check Redis is running: `docker ps | grep redis`
 - Restart: `docker-compose restart redis`
 
+### "Cannot connect to Kafka"
+- Check Kafka is running: `docker ps | grep kafka`
+- Restart: `docker-compose restart kafka zookeeper`
+
 ### "Port already in use"
-- API uses port 3000
-- Frontend uses port 3001 (auto-switches if 3000 is taken)
+- Frontend uses port 3000
+- API uses port 8000
 - Kill process: `lsof -ti:3000 | xargs kill -9`
 
 ### Prisma Client issues
@@ -187,40 +191,16 @@ npx prisma generate
 
 ---
 
-## 📊 Current Architecture
+## ✅ System is Complete
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                    USER ADDS MONITOR                     │
-└─────────────────────────────────────────────────────────┘
-                            ↓
-┌─────────────────────────────────────────────────────────┐
-│  PUSHER (every 3 min)                                   │
-│  - Fetches all websites from DB                         │
-│  - Pushes to Redis Stream                               │
-└─────────────────────────────────────────────────────────┘
-                            ↓
-┌─────────────────────────────────────────────────────────┐
-│  REDIS STREAM (india, usa)                              │
-└─────────────────────────────────────────────────────────┘
-                            ↓
-┌─────────────────────────────────────────────────────────┐
-│  WORKER (2 regions)                                     │
-│  - Consumes from Redis Stream                           │
-│  - Checks website availability                          │
-│  - Saves to website_tick table                          │
-└─────────────────────────────────────────────────────────┘
-```
+The BetterUptime monitoring system is fully implemented with:
 
-**After Kafka Implementation:**
-```
-Worker → Kafka → Notification Worker → Email/Slack/Discord/etc.
-```
+- ✅ Multi-region website monitoring
+- ✅ Real-time notifications via multiple channels
+- ✅ Kafka-based event system
+- ✅ Database logging of all notifications
+- ✅ Modern React dashboard
+- ✅ Docker containerization
+- ✅ Complete API endpoints
 
----
-
-## ✅ Ready for Kafka Implementation
-
-Your project is now properly set up and ready to add the Kafka notification system!
-
-Follow `KAFKA_IMPLEMENTATION_GUIDE.md` starting from Phase 1, with the note about updating (not creating) docker-compose.yml.
+Ready for production deployment!

@@ -45,12 +45,6 @@ export function CreateMonitorModal({
   };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogTrigger asChild>
-        <Button className="bg-indigo-600 hover:bg-indigo-700 h-9 ">
-          Create monitor
-          <ChevronDown size={16} className="ml-1" />
-        </Button>
-      </DialogTrigger>
       <DialogContent className="bg-slate-950   border-zinc-800/50 text-white sm:max-w-[480px]">
         <DialogHeader className="space-y-3 pb-6">
           <div className="flex items-start  gap-3">

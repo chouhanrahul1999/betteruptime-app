@@ -47,7 +47,7 @@ const items: MenuItem[] = [
 const Dashboard: MenuItem[] = [
   { title: "Dashboard", url: "/dashboard", icon: GalleryVerticalEnd },
   { title: "Logs & traces", url: "/dashboard/logs", icon: SquareTerminal },
-  { title: "Alert", url: "/dashboard/monitors", icon: TriangleAlert },
+  { title: "Alert", url: "/dashboard/alerts", icon: TriangleAlert },
 ];
 
 const Setting: MenuItem[] = [
@@ -67,7 +67,10 @@ interface AppSidebarProps {
 
 export function AppSidebar({ isOpen = true, onToggle }: AppSidebarProps) {
   const pathname = usePathname();
-  const [activeView, setActiveView] = useState<'dashboard' | 'items' | 'settings'>('items');
+  const [activeView, setActiveView] = useState<'dashboard' | 'items' | 'settings'>(
+    pathname === '/dashboard' ? 'dashboard' : 
+    pathname.startsWith('/dashboard/settings') ? 'settings' : 'items'
+  );
 
   const leftBarIcons = [
     { icon: LayoutDashboard, view: 'dashboard' as const },
