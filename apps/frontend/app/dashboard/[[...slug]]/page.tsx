@@ -188,6 +188,10 @@ export default function Dashboard() {
               /
             </kbd>
           </div>
+          <Button onClick={() => setOpen(true)}>
+            <Plus size={16} className="mr-2" />
+            Add Monitor
+          </Button>
           <CreateMonitorModal open={open} onOpenChange={setOpen} onSuccess={reFetch} />
         </div>
       </div>

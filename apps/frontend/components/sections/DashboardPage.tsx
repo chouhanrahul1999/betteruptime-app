@@ -30,7 +30,7 @@ interface DashboardPageProps {
 
 export function DashboardPage({ monitors, onCreateMonitor, onRefresh }: DashboardPageProps) {
   const router = useRouter();
-  const recentMonitors = monitors.slice(-3).reverse();
+  const recentMonitors = monitors.slice(-5).reverse();
   const [allTicks, setAllTicks] = useState<any[]>([]);
   const [allMonitorDetails, setAllMonitorDetails] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
